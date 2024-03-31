@@ -42,14 +42,15 @@ html, body {
 				<div class="card">
 					<div class="card-body">
 						Phone / Email:
-						<input type="text" class="form-control" placeholder="Username / Email" /><br />
+						<input id="username" type="text" class="form-control" placeholder="Username / Email" /><br />
 						
 						Password:
-						<input type="password" class="form-control" placeholder="*****" /><br />
+						<input id="password" type="password" class="form-control" placeholder="*****" /><br />
 						
-						<button class="btn btn-primary">
+						<button class="btn btn-primary" id="login-btn">
 							<span class="fa fa-rocket"></span> Login
 						</button>
+						
 						&nbsp; &nbsp; | &nbsp; &nbsp;
 						<a href="forgot_password.html">
 							Forgot Password?
@@ -69,5 +70,28 @@ html, body {
 		</div>
 	</div>
 
+<script>
+$("#login-btn").on("click", function(){
+
+	var username = $("#username").val();
+	var password = $("#password").val();
+	
+	$.ajax({
+		method: "POST",
+		url: "http://localhost/booking-app/api.php?key=asdljnalsdasd&action=login",
+		dataType: "json",
+		data: {
+			username: username,
+			password: password
+		}
+	}).done(function(res){
+		if(res.status == "success"){
+			window.location = "index.html";
+		}else{
+			alert(res.message);
+		}
+	});
+});
+</script>
 </body>
 </html>
