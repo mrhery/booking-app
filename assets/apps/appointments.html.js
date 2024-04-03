@@ -1,0 +1,5 @@
+var appointments = {
+	loadPage: function(){
+		
+	}
+}

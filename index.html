@@ -11,6 +11,22 @@
 	
 	<link href="./assets/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet">
 	
+	<script src="./assets/apps/dashboard.html.js"></script>
+	<script src="./assets/apps/logout.html.js"></script>
+	<script src="./assets/apps/appointments.html.js"></script>
+	<script src="./assets/apps/medical_record.html.js"></script>
+	<script src="./assets/apps/my_profile.html.js"></script>
+	<script>
+		let PORTAL = "http://localhost/CloudTunai/api/";
+		let api_key = "3maro-44ukk-ty8d1-qr20m-spo01";
+		
+		function api_url(endpoint = ""){
+			var url = PORTAL + endpoint + "?key=" + api_key;
+			
+			return url;
+		}
+	</script>
+	
 <style>
 html, body{
 	padding: 0;
@@ -185,6 +201,33 @@ html, body{
 </div>
 
 <script>
+var pages = {
+	"dashboard": {
+		html: "dashboard.html",
+		js: "dashboard.html.js",
+		_ins: dashboard
+	},
+	"appointments": {
+		html: "appointments.html",
+		js: "appointments.html.js",
+		_ins: appointments
+	},
+	"medical_record": {
+		html: "medical_record.html",
+		js: "medical_record.html.js",
+		_ins: medical_record
+	},
+	"my_profile": {
+		html: "my_profile.html",
+		js: "my_profile.html.js",
+		_ins: my_profile
+	},
+	"logout": {
+		html: "logout.html",
+		js: "logout.html.js",
+		_ins: logout
+	},
+};
 var today = new Date();
 var yyyy = today.getFullYear();
 let mm = (today.getMonth() + 1)  + "";
@@ -222,27 +265,33 @@ $(document).on("click", ".navigate", function(){
 	navigate(path);
 });
 
-function navigate(path = ""){	
-	$(".navigate").removeClass("active");
+function navigate(path = ""){
+	if(pages[path] != undefined){
+		$(".navigate").removeClass("active");
 	
-	$("[data-path='" + path + "']").addClass("active");
-	
-	$("#main-content").html("");
-	
-	$.ajax({
-		url: path,
-		method: "GET",
-		dataType: "text"
-	}).done(function(res){
-		$("#main-content").html(res);
-	}).fail(function(){
-		$("#main-content").html("<div class='text-center'>" + path + " not found.</div>");
-	});
-	
-	$(".popup-menu").hide();
+		$("[data-path='" + path + "']").addClass("active");
+		
+		$("#main-content").html("");
+		
+		$.ajax({
+			url: pages[path].html,
+			method: "GET",
+			dataType: "text"
+		}).done(function(res){
+			$("#main-content").html(res);
+			
+			pages[path]._ins.loadPage();
+		}).fail(function(){
+			$("#main-content").html("<div class='text-center'>" + path + " not found.</div>");
+		});
+		
+		$(".popup-menu").hide();
+	}else{
+		alert("page " + path + " not found");
+	}
 }
 
-navigate("dashboard.html");
+navigate("dashboard");
 
 $("#main-content").on("click", function(){
 	$(".popup-menu").hide();

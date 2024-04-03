@@ -1,7 +1,7 @@
 <div class="container-fluid">
 	<div class="row">
 		<div class="col-12 mb-3">
-			<h1>Welcome, {{username}}!</h1>
+			<h1>Welcome, <span id="name"></span>!</h1>
 			<div class="alert alert-info">
 				<strong>Info!</strong> Please make sure your information is up to date.
 			</div>
@@ -10,7 +10,7 @@
 		<div class="col-6 mb-4">
 			<div class="card">
 				<div class="card-body text-center bg-primary text-light">
-					<h2>10</h2>
+					<h2 id="total-appointment">-</h2>
 					Appointments
 				</div>
 			</div>
@@ -19,7 +19,7 @@
 		<div class="col-6">
 			<div class="card">
 				<div class="card-body text-center bg-warning text-light">
-					<h2>15</h2>
+					<h2 id="total-record">-</h2>
 					Health Records
 				</div>
 			</div>
@@ -28,7 +28,7 @@
 		<div class="col-6">
 			<div class="card">
 				<div class="card-body text-center bg-info text-light">
-					<h2>5</h2>
+					<h2 id="dtc">-</h2>
 					day(s) to checkup
 				</div>
 			</div>
@@ -37,7 +37,7 @@
 		<div class="col-6">
 			<div class="card">
 				<div class="card-body text-center bg-danger text-light">
-					<h2>RM 1,000.20</h2>
+					<h2 id="total-spent">-</h2>
 					Total Spent
 				</div>
 			</div>
@@ -46,37 +46,17 @@
 		<div class="col-12 mt-3">
 			<h3>Upcoming Appointments</h3>
 			
-			<div class="card mb-3">
-				<div class="card-body">
-					<strong><u>Klinik A Ahmad</u></strong> @ 23 May 2024 10:30am<br />
-					
-					<p>Check braces gigi</p>
-				</div>
+			<div id="upcoming">
+				<i>You have no upcoming appointment(s).</i>
 			</div>
 			
-			<div class="card mb-3">
-				<div class="card-body">
-					<strong><u>Klinik A Ahmad</u></strong> @ 23 May 2024 10:30am<br />
-					
-					<p>Check braces gigi</p>
-				</div>
-			</div>
-			
-			<div class="card mb-3">
-				<div class="card-body">
-					<strong><u>Klinik A Ahmad</u></strong> @ 23 May 2024 10:30am<br />
-					
-					<p>Check braces gigi</p>
-				</div>
-			</div>
-			
-			<div class="card mb-3">
-				<div class="card-body">
-					<strong><u>Klinik A Ahmad</u></strong> @ 23 May 2024 10:30am<br />
-					
-					<p>Check braces gigi</p>
-				</div>
-			</div>
 		</div>
 	</div>
 </div>
+
+<script>
+window.onload = function(){
+	alert();
+}
+
+</script>

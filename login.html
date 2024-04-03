@@ -15,9 +15,11 @@
 html, body {
 	padding: 0;
 	margin: 0;
+	height: 100%;
 	background-image: url(./bg.jpg);
 	background-size: cover;
-	background-position: top;
+	background-position: center;
+	background-repeat: no-repeat;
 }
 
 .logo {
@@ -36,8 +38,6 @@ html, body {
 					<h3>Welcome to Booking App!</h3>
 					<strong>Login to your account</strong>
 				</div>
-				
-				
 				
 				<div class="card">
 					<div class="card-body">
@@ -63,7 +63,6 @@ html, body {
 								Not yet a member? Register Now!
 							</a>
 						</div>
-						
 					</div>
 				</div>
 			</div>
@@ -71,6 +70,15 @@ html, body {
 	</div>
 
 <script>
+let PORTAL = "http://localhost/CloudTunai/api/";
+let api_key = "3maro-44ukk-ty8d1-qr20m-spo01";
+
+function api_url(endpoint = ""){
+	var url = PORTAL + endpoint + "?key=" + api_key;
+	
+	return url;
+}
+		
 $("#login-btn").on("click", function(){
 
 	var username = $("#username").val();
@@ -78,7 +86,7 @@ $("#login-btn").on("click", function(){
 	
 	$.ajax({
 		method: "POST",
-		url: "http://localhost/booking-app/api.php?key=asdljnalsdasd&action=login",
+		url: api_url("login"),
 		dataType: "json",
 		data: {
 			username: username,
@@ -86,6 +94,10 @@ $("#login-btn").on("click", function(){
 		}
 	}).done(function(res){
 		if(res.status == "success"){
+			localStorage.setItem("username", res.data.username);
+			localStorage.setItem("password", res.data.password);
+			localStorage.setItem("ukey", res.data.ukey);
+		
 			window.location = "index.html";
 		}else{
 			alert(res.message);

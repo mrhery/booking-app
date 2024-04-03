@@ -1,0 +1,5 @@
+var logout = {
+	loadPage: function(){
+		
+	}
+}
