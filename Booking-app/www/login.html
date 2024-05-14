@@ -78,8 +78,9 @@ $("#login-btn").on("click", function(){
 	
 	$.ajax({
 		method: "POST",
-		url: "http://localhost/booking-app/api.php?key=asdljnalsdasd&action=login",
+		url: "https://bualapi.kotak.pro/video-call/",
 		dataType: "json",
+		crossDomain: true,
 		data: {
 			username: username,
 			password: password
