@@ -18,6 +18,7 @@
   "cordova": {
     "platforms": [
       "browser"
-    ]
+    ],
+    "plugins": {}
   }
 }
