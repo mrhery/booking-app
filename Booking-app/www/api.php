@@ -55,6 +55,21 @@ if(isset($_GET["key"]) && $_GET["key"] == "asdljnalsdasd"){
 			"message"	=> "Unknown API endpoint."
 		]));
 	}
+
+	 
+	if(isset($_GET["action"]) && $_GET["action"] == "getAppointments") {
+		$query = mysqli_query($conn, "SELECT appointments.*, clinics.c_name AS clinic_name, customers.c_name AS customer_name FROM appointments 
+									   INNER JOIN clinics ON appointments.a_clinic = clinics.c_id
+									   INNER JOIN customers ON appointments.a_customer = customers.c_id");
+		$appointments = [];
+		while($row = mysqli_fetch_assoc($query)) {
+			$appointments[] = $row;
+		}
+		echo json_encode($appointments);
+		exit;  
+	}
+	
+
 }else{
 	die(json_encode([
 		"status"	=> "error",
