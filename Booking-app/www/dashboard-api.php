@@ -31,7 +31,7 @@ if(isset($_GET["key"]) && $_GET["key"] == "asdljnalsdasd"){
                 $totalClient = "SELECT count(*) as total FROM customers";
                 $result3 = mysqli_query($conn, $totalClient);
 
-                $reqestAppointments = "SELECT appointments.a_date, appointments.a_time, appointments.a_reason, appointments.a_createdDate, clinics.c_name, customers.c_name  
+                $reqestAppointments = "SELECT appointments.a_date, appointments.a_time, appointments.a_reason, appointments.a_createdDate, clinics.c_name as clinic_name, customers.c_name as customer_name
                 FROM appointments 
                 LEFT JOIN clinics ON appointments.a_clinic = clinics.c_id 
                 LEFT JOIN customers ON appointments.a_customer = customers.c_id
@@ -203,6 +203,77 @@ if(isset($_GET["key"]) && $_GET["key"] == "asdljnalsdasd"){
                     ]);
                 }
 
+            break;
+
+            case "requestAppointments":
+                $reqestAppointments = "SELECT a.a_date, a.a_time, a.a_reason, a.a_createdDate, a.a_ukey,
+                clinics.c_name as clinic_name, customers.c_name as customer_name
+                FROM appointments as a
+                LEFT JOIN clinics ON a.a_clinic = clinics.c_id 
+                LEFT JOIN customers ON a.a_customer = customers.c_id
+                WHERE a.a_status = 0
+                ORDER BY a.a_createdDate DESC";
+                $result1 = mysqli_query($conn, $reqestAppointments);
+
+                if($result1){
+                    $data1 = mysqli_fetch_all($result1, MYSQLI_ASSOC);
+                    foreach ($data1 as $key => $appointment) {
+                        $data1[$key]['a_time'] = date('d M Y h:i A', $appointment['a_time']);
+                    }
+
+                    echo json_encode([
+                        "status" => "success",
+                        "data" => $data1
+                    ]);
+                } else {
+                    echo json_encode([
+                        "status" => "error",
+                        "message" => "Failed to execute query."
+                    ]);
+                }
+
+            break;
+
+            case "actionAppointments":
+                if(isset($_POST["id"]) && $_POST["action"] == "approve"){
+                    $id = $_POST["id"];
+                    $query = "UPDATE appointments SET a_status = 1 WHERE a_ukey = '$id'";
+                    $result = mysqli_query($conn, $query);
+            
+                    if($result){
+                        echo json_encode([
+                            "status" => "success",
+                            "message" => "Appointment approved."
+                        ]);
+                    } else {
+                        echo json_encode([
+                            "status" => "error",
+                            "message" => "Failed to execute query."
+                        ]);
+                    }
+                } elseif (isset($_POST["id"]) && $_POST["action"] == "reject") {
+                    $id = $_POST["id"];
+                    $query = "UPDATE appointments SET a_status = 2 WHERE a_ukey = '$id'";
+                    $result = mysqli_query($conn, $query);
+            
+                    if($result){
+                        echo json_encode([
+                            "status" => "success",
+                            "message" => "Appointment rejected."
+                        ]);
+                    } else {
+                        echo json_encode([
+                            "status" => "error",
+                            "message" => "Failed to execute query."
+                        ]);
+                    }
+                } else {
+                    echo json_encode([
+                        "status" => "error",
+                        "message" => "Appointment ID is required."
+                    ]);
+                }
+                
             break;
 		}
 	}else{

@@ -33,8 +33,8 @@ li.active a {
   
 	
 	<ul>
-		<li class="active"><a href="#appointment" data-path="appointments.html">Appointments</a></li>
-		<li><a class="navigate" href="#requests" data-path="requests.html">Requests</a></li>
+		<li class="active"><a href="#" data-path="appointments.html">Appointments</a></li>
+		<li><a class="navigate" href="#" data-path="requests.html">Requests</a></li>
 	</ul>
 
 	<div class="container-fluid" style="overflow: scroll; height: 100%;">
@@ -58,11 +58,7 @@ li.active a {
 				All
 			</button>
 		</div>
-	
-		 
-
-
-			
+    <div class="col-12" id="appointmentCard"></div>
 		<!-- <div class="fab-appointment" data-bs-toggle="modal" data-bs-target="#add-appointment">
 			<span class="fa fa-plus"></span>
 		</div> -->
@@ -80,42 +76,50 @@ $(document).ready(function() {
   });
 });
 
+$(document).ready(function() {
+    $('.appointment-select').click(function() {
+        var type = $(this).data('type');
+        var url = 'https://localhost/booking-app/Booking-app/www/api.php?key=asdljnalsdasd&action=getAppointments&type=' + type;
 
-$.ajax({
-    url: 'http://localhost/booking-app/booking-app/Booking-app/www/api.php?key=asdljnalsdasd&action=getAppointments',
-    type: 'GET',
-    dataType: 'json',
-    success: function(response) {
-        // Handle the response and populate your UI
-        response.forEach(function(appointment) {
-            // Example: Populate appointment data into a card
-            var appointmentCard = `
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <div class="row mt-4">
-                            <div class="col-9">
-                                <strong><u>${appointment.clinic_name}</u></strong><br />
-                                <span>${appointment.customer_name}</span><br>
-                                <span>${appointment.a_date} ${appointment.a_time}</span><br>
-                                <p>${appointment.a_reason}</p>
+        $('.appointment-select').removeClass('btn-dark').addClass('btn-outline-dark');
+        $(this).removeClass('btn-outline-dark').addClass('btn-dark');
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                // Clear the existing appointments
+                $('#appointmentCard').html('');
+
+                // Handle the response and populate your UI
+                response.forEach(function(appointment) {
+                    // Example: Populate appointment data into a card
+                    var appointmentCard = `
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="row mt-4">
+                                    <div class="col-9">
+                                        <strong><u>${appointment.clinic_name}</u></strong><br />
+                                        <span>${appointment.customer_name}</span><br>
+                                        <span>${appointment.a_date} ${appointment.a_time}</span><br>
+                                        <p>${appointment.a_reason}</p>
+                                    </div>
+                                    <div class="col-3">
+                                      <button class="btn btn-info navigate" data-path="detail_patient.html" data-ukey="${appointment.a_ukey}"> Details </button>
+                                    </div>						
+                                </div>
                             </div>
-                            <div class="col-3">
-                                <button class="btn btn-info">
-                                    Details
-                                </button>
-                            </div>						
                         </div>
-                    </div>
-                </div>
-            `;
-            $('.container-fluid').append(appointmentCard);
+                    `;
+                    $('#appointmentCard').append(appointmentCard);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching appointments:', error);
+            }
         });
-    },
-    error: function(xhr, status, error) {
-        console.error('Error fetching appointments:', error);
-    }
-
-	
+    });
 });
 
 </script>
