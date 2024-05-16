@@ -40,7 +40,7 @@ if(isset($_GET["key"]) && $_GET["key"] == "asdljnalsdasd"){
                 LIMIT 3";
                 $result4 = mysqli_query($conn, $reqestAppointments);
 
-                $upcomingAppointments = "SELECT appointments.a_date,  appointments.a_time, appointments.a_reason, appointments.a_createdDate, clinics.c_name AS clinicname, customers.c_name AS customername  
+                $upcomingAppointments = "SELECT appointments.a_ukey, appointments.a_date,  appointments.a_time, appointments.a_reason, appointments.a_createdDate, clinics.c_name AS clinicname, customers.c_name AS customername  
                 FROM appointments 
                 LEFT JOIN clinics ON appointments.a_clinic = clinics.c_id 
                 LEFT JOIN customers ON appointments.a_customer = customers.c_id
@@ -109,10 +109,6 @@ if(isset($_GET["key"]) && $_GET["key"] == "asdljnalsdasd"){
                         $data6['sex'] = $customerInfo['sex'];
                     }
 
-                    // if($data8){
-                    //     $data8['a_time'] = date('d M Y h:i A', $data8['a_time']);
-                    // }
-
                     if($data8){
                         $data8['a_time'] = date('d M Y h:i A', $data8['a_time']);
                     } else {
@@ -143,43 +139,18 @@ if(isset($_GET["key"]) && $_GET["key"] == "asdljnalsdasd"){
                     ]);
                 }
 
-            // echo date('d M Y h:i A', time());
             break;
 
             case "detail":
                 if(isset($_GET["id"])){
                     $id = $_GET["id"];
-                    $query = "SELECT a.a_date, a.a_time, a.a_reason, a.a_createdDate, a.a_status, c.c_name AS clinicname, cu.c_name AS customername, cu.c_phone AS customerphone, cu.c_email AS customeremail, cu.c_ic AS customeric
+                    $query = "SELECT a.a_date, a.a_time, a.a_reason, a.a_createdDate, a.a_status, a.a_customer,
+                    c.c_name AS clinicname, cu.c_name AS customername, cu.c_phone AS customerphone, cu.c_email AS customeremail, cu.c_ic AS customeric
                     FROM appointments as a
                     LEFT JOIN clinics as c ON a.a_clinic = c.c_id 
                     LEFT JOIN customers as cu ON a.a_customer = cu.c_id
-                    WHERE a.a_id = $id";
+                    WHERE a.a_ukey = '$id'";
                     $result = mysqli_query($conn, $query);
-
-                    $subQuery = "SELECT a.a_customer
-                    FROM appointments as a
-                    LEFT JOIN clinics ON a.a_clinic = clinics.c_id 
-                    LEFT JOIN customers ON a.a_customer = customers.c_id
-                    WHERE a.a_status = 1
-                    AND a.a_time >= UNIX_TIMESTAMP(NOW())
-                    ORDER BY a.a_time ASC
-                    LIMIT 1";
-                    $resultSubQuery = mysqli_query($conn, $subQuery);
-                    $dataSubQuery = mysqli_fetch_assoc($resultSubQuery);
-
-                    $lastAppointmentQuery = "SELECT a_time FROM appointments
-                    WHERE a_customer = " . $dataSubQuery['a_customer'] . " 
-                    AND a_time < UNIX_TIMESTAMP(NOW())
-                    ORDER BY a_time DESC
-                    LIMIT 1";
-                    $result2 = mysqli_query($conn, $lastAppointmentQuery);
-
-                    $historyQuery = "SELECT a_reason FROM appointments 
-                    WHERE a_customer = " . $dataSubQuery['a_customer'] . " 
-                    AND a_time < UNIX_TIMESTAMP(NOW())
-                    ORDER BY a_time DESC
-                    LIMIT 6";
-                    $result3 = mysqli_query($conn, $historyQuery);
 
                     if($result){
                         $data = mysqli_fetch_assoc($result);
@@ -189,6 +160,21 @@ if(isset($_GET["key"]) && $_GET["key"] == "asdljnalsdasd"){
                         $data['sex'] = $customerInfo['sex'];
                     }
 
+                    $lastAppointmentQuery = "SELECT a_time FROM appointments
+                    WHERE a_customer = " . $data['a_customer'] . " 
+                    AND a_time < UNIX_TIMESTAMP(NOW())
+                    ORDER BY a_time DESC
+                    LIMIT 1";
+                    $result2 = mysqli_query($conn, $lastAppointmentQuery);
+
+                    $historyQuery = "SELECT a_reason FROM appointments 
+                    WHERE a_customer = " . $data['a_customer'] . " 
+                    AND a_time < UNIX_TIMESTAMP(NOW())
+                    ORDER BY a_time DESC
+                    LIMIT 6";
+                    $result3 = mysqli_query($conn, $historyQuery);
+
+                    
                     if($result2){
                         $data['lastAppointment'] = mysqli_fetch_assoc($result2);
                         if ($data['lastAppointment']) {
@@ -200,11 +186,15 @@ if(isset($_GET["key"]) && $_GET["key"] == "asdljnalsdasd"){
 
                     if($result3){
                         $data['nextReason'] = mysqli_fetch_all($result3);
+                        if(empty($data['nextReason'])){
+                            $data['nextReason'] = ['No record'];
+                        }
                     }
 
                     echo json_encode([
                         "status" => "success",
                         "data" => $data,
+                        
                     ]);
                 }else{
                     echo json_encode([

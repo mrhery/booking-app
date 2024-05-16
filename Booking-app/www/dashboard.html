@@ -96,7 +96,7 @@
 						<div class="col-7">
 							<div class="">
 								<strong>Last Appointment</strong><br>
-								<span id="lastAppointment">N/A</span>
+								<span id="nextLastAppointment">N/A</span>
 							</div>
 						</div>
 						<div class="col-5">
@@ -138,68 +138,70 @@
 	</div>
 </div>
 
+<!-- dashboard.html -->
 <script>
-$(document).ready(function() {	
-	$.ajax({
-		method: "GET",
-		url: "https://localhost/booking-app/Booking-app/www/dashboard-api.php?key=asdljnalsdasd&action=dashboard",
-		dataType: "json",
-		crossDomain: true,
-		success: function(response) {
-			if(response.status === 'success') {
-				$('#monthAppointments h2').text(response.monthAppointments);
-				$('#todayAppointments h2').text(response.todayAppointments);
-				$('#totalClient h2').text(response.totalClient);
-				$('#nextName').text(response.nextAppointments.customername);
-				$('#nextIc').text(response.nextAppointments.customeric);
-				$('#nextPhone').text(response.nextAppointments.customerphone);
-				$('#nextAge').text(response.nextAppointments.age);
-				$('#nextSex').text(response.nextAppointments.sex);
-				$('#lastAppointment').text(response.lastAppointment.a_time);
-
-				var appointmentsHtml = '';
-                $.each(response.reqestAppointments, function(index, appointment) {
-                    appointmentsHtml += '<div class="mt-4">' +
-                        '<strong><u>' + appointment[4] + '</u></strong><br />' + 
-                        '<span>' + appointment[5] + '</span><br>' + 
-                        '<span>' + appointment[0] + ' ' + appointment[1] + '</span><br>' + 
-                        '<span>' + appointment[2] + '</span><br>' + 
-						'<span> Created at : ' + appointment[3] + '</span><br>' +
-                        '<hr>' +
-                    '</div>';
-                });
-                $('#reqestAppointments').append(appointmentsHtml);
-
-				var upcomingAppointments = '';
-                $.each(response.upcomingAppointments, function(index, appointment) {
-                    upcomingAppointments += '<div class="row mt-4">' + 
-						'<div class="col-9">' +
-							'<strong><u>' + appointment['clinicname'] + '</u></strong><br />' + 
-							'<span>' + appointment['customername'] + '</span><br>' + 
-							'<span>' + appointment['a_time'] + '</span><br>' + 
-							'<span>' + appointment['a_reason'] + '</span><br>' + 
-						'</div>' +
-						'<div class="col-3"> <button class="btn btn-info navigate" data-path="detail_patient.html"> Details </button> </div>'+
-					'</div><hr>';
-                });
-                $('#upcomingAppointments').append(upcomingAppointments);
-
-				var nextReason = '';
-                $.each(response.nextReason, function(index, appointment) {
-                    nextReason += '<div class="col-6">' +
-								'<span class="rounded bg-info p-1">' + appointment +'</span>' +
-							'</div>';
-                });
-                $('#nextReason').append(nextReason);
-				
-			} else {
-				console.error('Failed to fetch total appointments:', response.message);
+	$(document).ready(function() {	
+		$.ajax({
+			method: "GET",
+			url: "https://localhost/booking-app/Booking-app/www/dashboard-api.php?key=asdljnalsdasd&action=dashboard",
+			dataType: "json",
+			crossDomain: true,
+			success: function(response) {
+				if(response.status === 'success') {
+					$('#monthAppointments h2').text(response.monthAppointments);
+					$('#todayAppointments h2').text(response.todayAppointments);
+					$('#totalClient h2').text(response.totalClient);
+					$('#nextName').text(response.nextAppointments.customername);
+					$('#nextIc').text(response.nextAppointments.customeric);
+					$('#nextPhone').text(response.nextAppointments.customerphone);
+					$('#nextAge').text(response.nextAppointments.age);
+					$('#nextSex').text(response.nextAppointments.sex);
+					$('#nextLastAppointment').text(response.lastAppointment.a_time);
+	
+					var appointmentsHtml = '';
+					$.each(response.reqestAppointments, function(index, appointment) {
+						appointmentsHtml += '<div class="mt-4">' +
+							'<strong><u>' + appointment[4] + '</u></strong><br />' + 
+							'<span>' + appointment[5] + '</span><br>' + 
+							'<span>' + appointment[0] + ' ' + appointment[1] + '</span><br>' + 
+							'<span>' + appointment[2] + '</span><br>' + 
+							'<span> Created at : ' + appointment[3] + '</span><br>' +
+							'<hr>' +
+						'</div>';
+					});
+					$('#reqestAppointments').append(appointmentsHtml);
+	
+					var upcomingAppointments = '';
+					$.each(response.upcomingAppointments, function(index, appointment) {
+						upcomingAppointments += '<div class="row mt-4">' + 
+							'<div class="col-9">' +
+								'<strong><u>' + appointment['clinicname'] + '</u></strong><br />' + 
+								'<span>' + appointment['customername'] + '</span><br>' + 
+								'<span>' + appointment['a_time'] + '</span><br>' + 
+								'<span>' + appointment['a_reason'] + '</span><br>' + 
+							'</div>' +
+							'<div class="col-3"> <button class="btn btn-info navigate" data-path="detail_patient.html" data-ukey="' + appointment['a_ukey'] + '"> Details </button> </div>'+
+						'</div><hr>';
+					});
+					$('#upcomingAppointments').append(upcomingAppointments);
+	
+					var nextReason = '';
+					$.each(response.nextReason, function(index, appointment) {
+						nextReason += '<div class="col-6">' +
+									'<span class="rounded bg-info p-1">' + appointment +'</span>' +
+								'</div>';
+					});
+					$('#nextReason').append(nextReason);
+					
+				} else {
+					console.error('Failed to fetch total appointments:', response.message);
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				console.error('AJAX error:', textStatus, ', Details:', errorThrown);
 			}
-		},
-		error: function(jqXHR, textStatus, errorThrown) {
-			console.error('AJAX error:', textStatus, ', Details:', errorThrown);
-		}
-
+	
+		});
 	});
-});
 </script>
+<!-- dashboard.html -->

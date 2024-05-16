@@ -223,8 +223,9 @@ $(document).on("click", ".nav-button", function(){
 
 $(document).on("click", ".navigate", function(){
 	var path = $(this).data("path");
-	
 	navigate(path);
+	var ukey = $(this).data('ukey');
+	window.currentUkey = ukey; 
 });
 
 function navigate(path = ""){	
