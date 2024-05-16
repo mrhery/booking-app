@@ -1,0 +1,95 @@
+<div class="container-fluid">
+    <div class="row mt-2">
+        <h1>Patient Details</h1>
+        <div class="col-12 mt-3">
+			<div class="card">
+				<div class="card-body">
+					
+					<div class="mt-4 mb-3">
+						<div class="">
+							<strong>Name : </strong>
+							<span id="nextName">N/A</span>
+						</div>
+						<div class="">
+							<strong>IC No. : </strong>
+							<span  id="nextIc">N/A</span>
+						</div>
+					</div>
+					
+					<div class="row g-3">
+						
+						<div class="col-7">
+							<div class="">
+								<strong>Contact</strong><br>
+								<span  id="nextPhone">N/A</span>
+							</div>
+						</div>
+						<div class="col-5">
+							<div class="">
+								<strong>Age</strong><br>
+								<span id="nextAge">N/A</span>
+							</div>
+						</div>
+						
+						<div class="col-7">
+							<div class="">
+								<strong>Last Appointment</strong><br>
+								<span id="lastAppointment">N/A</span>
+							</div>
+						</div>
+						<div class="col-5">
+							<div class="">
+								<strong>Sex</strong><br>
+								<span id="nextSex">N/A</span>
+							</div>
+						</div>
+					</div>
+					
+					<div class="mt-3">
+						<strong><a href="" style="text-decoration: none;">History</a></strong><br />
+						<div class="row g-3 mt-1" id="nextReason">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {	
+        var id = "9";
+        $.ajax({
+            method: "GET",
+            url: "https://localhost/booking-app/Booking-app/www/dashboard-api.php?key=asdljnalsdasd&action=detail&id=" + id,
+            dataType: "json",
+            crossDomain: true,
+            success: function(response) {
+                if(response.status === 'success') {
+
+                    $('#nextName').text(response.data.customername);
+                    $('#nextIc').text(response.data.customeric);
+                    $('#nextPhone').text(response.data.customerphone);
+                    $('#nextAge').text(response.data.age);
+                    $('#nextSex').text(response.data.sex);
+                    $('#lastAppointment').text(response.data.lastAppointment.a_time);
+    
+                    var nextReason = '';
+                    $.each(response.data.nextReason, function(index, appointment) {
+                        nextReason += '<div class="col-md-4 col-6 mb-3">' +
+                                    '<span class="rounded bg-info p-1">' + appointment[0] +'</span>' +
+                                '</div>';
+                    });
+                    $('#nextReason').append(nextReason);
+                    
+                } else {
+                    console.error('Failed to fetch total appointments:', response.message);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error('AJAX error:', textStatus, ', Details:', errorThrown);
+            }
+    
+        });
+    });
+</script>

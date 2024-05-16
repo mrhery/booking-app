@@ -109,9 +109,20 @@ if(isset($_GET["key"]) && $_GET["key"] == "asdljnalsdasd"){
                         $data6['sex'] = $customerInfo['sex'];
                     }
 
+                    // if($data8){
+                    //     $data8['a_time'] = date('d M Y h:i A', $data8['a_time']);
+                    // }
+
                     if($data8){
                         $data8['a_time'] = date('d M Y h:i A', $data8['a_time']);
+                    } else {
+                        $data8 = ['a_time' => 'New Patient'];
                     }
+                
+                    if(empty($data7)){
+                        $data7 = ['No record'];
+                    }
+                    
 
                     echo json_encode([
                         "status" => "success",
@@ -133,6 +144,75 @@ if(isset($_GET["key"]) && $_GET["key"] == "asdljnalsdasd"){
                 }
 
             // echo date('d M Y h:i A', time());
+            break;
+
+            case "detail":
+                if(isset($_GET["id"])){
+                    $id = $_GET["id"];
+                    $query = "SELECT a.a_date, a.a_time, a.a_reason, a.a_createdDate, a.a_status, c.c_name AS clinicname, cu.c_name AS customername, cu.c_phone AS customerphone, cu.c_email AS customeremail, cu.c_ic AS customeric
+                    FROM appointments as a
+                    LEFT JOIN clinics as c ON a.a_clinic = c.c_id 
+                    LEFT JOIN customers as cu ON a.a_customer = cu.c_id
+                    WHERE a.a_id = $id";
+                    $result = mysqli_query($conn, $query);
+
+                    $subQuery = "SELECT a.a_customer
+                    FROM appointments as a
+                    LEFT JOIN clinics ON a.a_clinic = clinics.c_id 
+                    LEFT JOIN customers ON a.a_customer = customers.c_id
+                    WHERE a.a_status = 1
+                    AND a.a_time >= UNIX_TIMESTAMP(NOW())
+                    ORDER BY a.a_time ASC
+                    LIMIT 1";
+                    $resultSubQuery = mysqli_query($conn, $subQuery);
+                    $dataSubQuery = mysqli_fetch_assoc($resultSubQuery);
+
+                    $lastAppointmentQuery = "SELECT a_time FROM appointments
+                    WHERE a_customer = " . $dataSubQuery['a_customer'] . " 
+                    AND a_time < UNIX_TIMESTAMP(NOW())
+                    ORDER BY a_time DESC
+                    LIMIT 1";
+                    $result2 = mysqli_query($conn, $lastAppointmentQuery);
+
+                    $historyQuery = "SELECT a_reason FROM appointments 
+                    WHERE a_customer = " . $dataSubQuery['a_customer'] . " 
+                    AND a_time < UNIX_TIMESTAMP(NOW())
+                    ORDER BY a_time DESC
+                    LIMIT 6";
+                    $result3 = mysqli_query($conn, $historyQuery);
+
+                    if($result){
+                        $data = mysqli_fetch_assoc($result);
+                        $data['a_time'] = date('d M Y h:i A', $data['a_time']);
+                        $customerInfo = parseCustomerIC($data['customeric']);
+                        $data['age'] = $customerInfo['age'];
+                        $data['sex'] = $customerInfo['sex'];
+                    }
+
+                    if($result2){
+                        $data['lastAppointment'] = mysqli_fetch_assoc($result2);
+                        if ($data['lastAppointment']) {
+                            $data['lastAppointment']['a_time'] = date('d M Y h:i A', $data['lastAppointment']['a_time']);
+                        } else {
+                            $data['lastAppointment'] = ['a_time' => 'New Patient'];
+                        }
+                    }
+
+                    if($result3){
+                        $data['nextReason'] = mysqli_fetch_all($result3);
+                    }
+
+                    echo json_encode([
+                        "status" => "success",
+                        "data" => $data,
+                    ]);
+                }else{
+                    echo json_encode([
+                        "status" => "error",
+                        "message" => "Appointment ID is required."
+                    ]);
+                }
+
             break;
 		}
 	}else{
