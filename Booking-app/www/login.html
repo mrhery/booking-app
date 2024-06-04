@@ -34,64 +34,28 @@ html, body {
 					<img src="./hery.png" class="logo img img-fluid" />
 					<br /><br />
 					<h3>Welcome to Booking App!</h3>
-					<strong>Login to your account</strong>
+					<strong>Login as </strong>
 				</div>
 				
+				<div class="d-flex justify-content-around" style="margin-top: 70px;">
+                    <button class="btn btn-primary " style="width: 100px;">Customer</button>
+                    <button class="btn btn-primary " style="width: 100px;">Doctor</button>
+
+                </div>
 				
-				
-				<div class="card">
-					<div class="card-body">
-						Phone / Email:
-						<input id="username" type="text" class="form-control" placeholder="Username / Email" /><br />
-						
-						Password:
-						<input id="password" type="password" class="form-control" placeholder="*****" /><br />
-						
-						<button class="btn btn-primary" id="login-btn">
-							<span class="fa fa-rocket"></span> Login
-						</button>
-						
-						&nbsp; &nbsp; | &nbsp; &nbsp;
-						<a href="forgot_password.html">
-							Forgot Password?
-						</a>
-						
-						<hr />
-						
-						<div class="text-center">
-							<a href="register.html">
-								Not yet a member? Register Now!
-							</a>
-						</div>
-						
-					</div>
-				</div>
 			</div>
 		</div>
 	</div>
 
 <script>
-$("#login-btn").on("click", function(){
-
-	var username = $("#username").val();
-	var password = $("#password").val();
-	
-	$.ajax({
-		method: "POST",
-		url: "http://localhost/booking-app/Booking-app/www/api.php?key=asdljnalsdasd&action=login",
-		dataType: "json",
-		crossDomain: true,
-		data: {
-			username: username,
-			password: password
-		}
-	}).done(function(res){
-		if(res.status == "success"){
-			window.location = "index.html";
-		}else{
-			alert(res.message);
-		}
-	});
+$(document).ready(function() {
+    $(".btn").click(function() {
+        if ($(this).text() == "Customer") {
+            window.location = "customer_login.html";
+        } else {
+            window.location = "doctor_login.html";
+        }
+    });
 });
 </script>
 </body>
