@@ -51,11 +51,6 @@ $(document).ready(function() {
 		var phone = $('#profile-phone').val();
 		var address = $('#profile-address').val();
 
-		console.log('Name:', name);
-		console.log('Email:', email);
-		console.log('Phone:', phone);
-		console.log('Address:', address);
-
 		$.ajax({
 			url: 'https://localhost/booking-app/Booking-app/www/api.php?key=asdljnalsdasd&action=updateProfile',
 			type: 'POST',

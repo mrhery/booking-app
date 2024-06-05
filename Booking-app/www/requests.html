@@ -1,40 +1,42 @@
-<style> 
+<style>
     ul {
-      list-style-type: none;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background-color: black;
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: black;
+        display: flex;
     }
     
     li {
-      float: left;
-      width: 50%;
-      box-sizing: border-box;
+        flex: 1;
+        box-sizing: border-box;
     }
     
-    li a {
-      display: block;
-      color: white;
-      text-align: center;
-      padding: 16px 0;
-      text-decoration: none;
+    li button {
+        display: block;
+        color: white;
+        text-align: center;
+        padding: 16px 0;
+        text-decoration: none;
+        width: 100%;
+        border: none;
+        background: none;
     }
     
-    li a:hover {
-      background-color: black;
+    li button:hover {
+        background-color: #333;
     }
     
-    li.active a {
-      background-color: #474747;
+    li.active button {
+        background-color: #474747;
     }
-    
-    </style>
+</style>
       
         
         <ul>
-            <li><a class="navigate" href="#" data-path="appointments.html">Appointments</a></li>
-            <li class="active"><a class="navigate" href="#" data-path="requests.html">Requests</a></li>
+            <li ><button class="navigate" data-path="appointments.html">Appointments</button></li>
+            <li class="active"><button class="navigate"  data-path="requests.html">Requests</button></li>
         </ul>
     
         <div class="container-fluid" style="overflow: scroll; height: 100%;">
@@ -58,7 +60,7 @@
     <script> 
     
     $(document).ready(function() {
-      $('ul li a').click(function() {
+      $('ul li button').click(function() {
         $('ul li').removeClass('active');
         $(this).parent().addClass('active');
       });
