@@ -66,7 +66,7 @@
     
     
     $.ajax({
-        url: 'https://localhost/booking-app/Booking-app/www/dashboard-api.php?key=asdljnalsdasd&action=requestAppointments',
+        url: 'https://localhost/booking-app/Booking-app/www/api.php?key=asdljnalsdasd&action=requestAppointments' + '&userkey=' + localStorage.getItem('u_ukey') + '&clinickey=' + localStorage.getItem('c_ukey'),
         type: 'GET',
         dataType: 'json',
         success: function(response) {
@@ -80,7 +80,7 @@
                             '<span>' + appointment.a_date + ' ' + appointment.a_time + '</span><br>' + 
                             '<span>' + appointment.a_reason + '</span><br>' + 
                             '<span> Created at : ' + appointment.a_createdDate + '</span><br>' +
-                            '</div><div class="col-3"><button class="btn btn-success m-1 approve-btn" data-ukey="' + appointment.a_ukey + '"> Approve</button><button class="btn btn-danger m-1 reject-btn" data-ukey="' + appointment.a_ukey + '"> Reject</button></div></div></div></div>';
+                            '</div><div class="col-3"><button class="btn btn-success m-1 approve-btn navigate" data-path="requests.html" data-ukey="' + appointment.a_ukey + '"> Approve</button><button class="btn btn-danger m-1 reject-btn navigate" data-path="requests.html" data-ukey="' + appointment.a_ukey + '"> Reject</button></div></div></div></div>';
                     });
 					$('#reqestAppointments').append(appointmentsHtml);
 
@@ -97,7 +97,7 @@
         var id = $(this).data('ukey');
         
         $.ajax({
-            url: 'https://localhost/booking-app/Booking-app/www/dashboard-api.php?key=asdljnalsdasd&action=actionAppointments',
+            url: 'https://localhost/booking-app/Booking-app/www/api.php?key=asdljnalsdasd&action=actionAppointments',
             type: 'POST',
             data: {
                 id: id,
@@ -105,7 +105,8 @@
             },
             success: function(response) {
                 if(response.status === 'success') {
-                    alert('Appointment approved successfully!');
+                    // alert('Appointment approved successfully!');
+
                 } else {
                     console.error('Error approving appointment:', response);
                 }
@@ -119,7 +120,7 @@
         var id = $(this).data('ukey');
         
         $.ajax({
-            url: 'https://localhost/booking-app/Booking-app/www/dashboard-api.php?key=asdljnalsdasd&action=actionAppointments',
+            url: 'https://localhost/booking-app/Booking-app/www/api.php?key=asdljnalsdasd&action=actionAppointments',
             type: 'POST',
             data: {
                 id: id,
@@ -127,7 +128,7 @@
             },
             success: function(response) {
                 if(response.status === 'success') {
-                    alert('Appointment rejected successfully!');
+                    // alert('Appointment rejected successfully!');
                 } else {
                     console.error('Error rejecting appointment:', response);
                 }

@@ -42,7 +42,7 @@
 					<div id="reqestAppointments"></div>
 					
 					<div>
-						<a href="" style="text-decoration: none;">See All</a>
+						<a href="#" class="navigate" data-path="requests.html" style="text-decoration: none;">See All</a>
 					</div>
 				</div>
 			</div>
@@ -142,9 +142,9 @@
 <script>
 	$(document).ready(function() {	
 		var userkey = localStorage.getItem('u_ukey');
-		console.log(userkey);
+		//console.log(userkey);
 		var clinickey = localStorage.getItem('c_ukey');
-		console.log(clinickey);
+		//console.log(clinickey);
 
 		$.ajax({
 			method: "GET",
