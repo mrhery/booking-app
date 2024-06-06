@@ -570,9 +570,8 @@ if(isset($_GET["key"]) && $_GET["key"] == "asdljnalsdasd"){
 					$email = $_POST['email'];
 					$phone = $_POST['phone'];
 					$address = $_POST['address'];
-					$ic = $_POST['ic'];
 
-					$query = "UPDATE customers SET c_name = '$name', c_email = '$email', c_phone = '$phone', c_address = '$address', c_ic = '$ic' WHERE c_id = $userId";
+					$query = "UPDATE customers SET c_name = '$name', c_email = '$email', c_phone = '$phone', c_address = '$address' WHERE c_id = $userId";
 					$result = mysqli_query($conn, $query);
 
 					if($result){
