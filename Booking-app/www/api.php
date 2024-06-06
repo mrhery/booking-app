@@ -482,6 +482,55 @@ if(isset($_GET["key"]) && $_GET["key"] == "asdljnalsdasd"){
 				}
 			break;
 
+			case "customerDashboard":
+
+				$userId = getCustomerID($conn, $_GET['userkey']);
+
+				$query = mysqli_query($conn, "SELECT c_name FROM customers WHERE c_id = $userId");
+				// $data = mysqli_fetch_assoc($query);
+				// echo json_encode($data);
+
+				$requestAppointments = "SELECT a.a_date, a.a_time, a.a_reason, a.a_createdDate, clinics.c_name as clinic_name, customers.c_name as customer_name
+                FROM appointments as a
+                LEFT JOIN clinics ON a.a_clinic = clinics.c_id 
+                LEFT JOIN customers ON a.a_customer = customers.c_id
+                WHERE a.a_status = 0
+				AND a.a_customer = $userId
+                ORDER BY a.a_createdDate DESC
+                LIMIT 3";
+
+                $result1 = mysqli_query($conn, $requestAppointments);
+
+				$upcomingAppointments = "SELECT a.a_ukey, a.a_date,  a.a_time, a.a_reason, a.a_createdDate, 
+				clinics.c_name AS clinicname, customers.c_name AS customername  
+                FROM appointments AS a
+                LEFT JOIN clinics ON a.a_clinic = clinics.c_id 
+                LEFT JOIN customers ON a.a_customer = customers.c_id
+                WHERE a.a_status = 1
+				AND a.a_customer = $userId
+                AND a.a_time >= UNIX_TIMESTAMP(NOW())
+                ORDER BY a.a_time ASC
+                LIMIT 3";
+
+                $result2 = mysqli_query($conn, $upcomingAppointments);
+
+				$data1 = mysqli_fetch_all($result1);
+				$data2 = mysqli_fetch_all($result2, MYSQLI_ASSOC);
+
+				foreach ($data2 as $key => $appointment) {
+					$data2[$key]['a_time'] = date('d M Y h:i A', $appointment['a_time']);
+				}
+
+				echo json_encode([
+					"status" => "success",
+					"username" => mysqli_fetch_assoc($query)['c_name'],
+					"requestAppointments" => $data1,
+					"upcomingAppointments" => $data2,
+
+				]);
+
+
+			break;
 			case "getCustomerAppointments":
 				$userId = getCustomerID($conn, $_GET['userkey']);
 
