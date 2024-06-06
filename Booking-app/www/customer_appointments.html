@@ -1,0 +1,70 @@
+<div class="container-fluid" style="overflow: scroll; height: 100%;">
+    <div class="row">
+        <div class="col-12 mb-3">
+            <h1>My Appointments</h1>
+        </div>
+    <div class="col-12" id="appointmentCard"></div>
+        <div class="fab-appointment" data-bs-toggle="modal" data-bs-target="#add-appointment">
+            <span class="fa fa-plus"></span>
+        </div>
+        
+    </div>
+</div>
+
+
+<script> 
+
+$(document).ready(function() {
+    var u_ukey = localStorage.getItem('u_ukey');
+
+    var type = $(this).data('type');
+    var url = 'https://localhost/booking-app/Booking-app/www/api.php?key=asdljnalsdasd&action=getCustomerAppointments&userkey=' + localStorage.getItem('u_ukey');
+
+    $('.appointment-select').removeClass('btn-dark').addClass('btn-outline-dark');
+    $(this).removeClass('btn-outline-dark').addClass('btn-dark');
+
+    $.ajax({
+        url: url,
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+
+            // Clear the existing appointments
+            $('#appointmentCard').html('');
+
+            // Handle the response and populate your UI
+            response.forEach(function(appointment) {
+            var statusColor = appointment.a_status === 'Approved' ? 'green' : 
+                (appointment.a_status === 'Rejected' ? 'red' : 
+                (appointment.a_status === 'Pending' ? ' #ffc107 ' : 'black'));
+
+            // Example: Populate appointment data into a card
+            var appointmentCard = `
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="row mt-4">
+                            <div class="col-9">
+                                <strong><u>${appointment.clinic_name}</u></strong><br />
+                                <span>${appointment.a_time}</span><br>
+                                <span>${appointment.a_reason}</span><br>
+                                Status : <span style="color: ${statusColor};" >${appointment.a_status}</span><br>
+                                <span> Created at : ${appointment.a_createdDate}</span>
+                            </div>
+                            <div class="col-3">
+                                <button class="btn btn-info navigate" data-path="detail_patient.html" data-ukey="${appointment.a_ukey}"> Details </button>
+                            </div>						
+                        </div>
+                    </div>
+                </div>
+            `;
+            $('#appointmentCard').append(appointmentCard);
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching appointments:', error);
+        }
+    });
+
+});
+
+</script>

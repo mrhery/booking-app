@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Bootstrap Example</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+	
+	<script src="./assets/vendor/jquery/jquery.min.js"></script>
+	
+	<link href="./assets/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+
+
+	
+<style>
+html, body{
+	padding: 0;
+	margin: 0;
+	background-color: #e3effc;
+}
+
+.nav-bar {
+	background-color: black;
+	padding: 15px;
+	position: fixed;
+	width: 100%;
+	z-index: 5;
+}
+
+.navbar-icon {
+	height: 40px;
+}
+
+.nav-button {
+	position: absolute;
+	right: 15px;
+}
+
+.popup-menu {
+	background-color: #666666;
+	position: absolute;
+	right: 0;
+	top: 70px;
+	width: 200px;
+	display: none;
+	z-index: 5;
+}
+
+.popup-menu-item {
+	width: 100%;
+	padding: 10px;
+	color: white;
+	text-decoration: none;
+}
+
+.popup-menu-item:hover {
+	background-color: #202224;
+	cursor: pointer;
+}
+
+.popup-menu-item.active {
+	background-color: #202224;
+}
+
+.bottom-nav {
+	background-color: black;
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	z-index: 5;
+}
+
+.bottom-nav-item {
+	padding: 15px;
+}
+
+.bottom-nav-item:hover {
+	background-color: #383838;
+	cursor: pointer;
+}
+
+.bottom-nav-item.active {
+	background-color: #383838;
+}
+
+.main-content {
+	height: calc(100% - 170px);
+	position: fixed;
+	width: 100%;
+	top: 49%;
+	transform: translate(0, -50%);
+	overflow-y: auto;
+}
+
+.fab-appointment {
+	padding: 20px;
+	position: fixed; 
+	bottom: 0px;
+	/* margin-right: 15px;
+	margin-left: auto; */
+	right: 15px;
+	background-color: #0088c7;
+	border-radius: 50px;
+	text-align: center;
+	width: 70px;
+	height: 70px;
+	cursor: pointer;
+	z-index: 5;
+}
+
+.fab-appointment:hover {
+	background-color: #2fb8f7;
+}
+
+.fab-appointment > span {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 20pt;
+	color: white;
+}
+
+.add-appointment-search-box {
+	position: absolute;
+	background-color: #272c2e;
+	width: 100%;
+	display: none;
+}
+
+.add-appointment-search-item {
+	background-color: #272c2e;
+	padding: 10px;
+	color: white;
+}
+
+.add-appointment-search-item:hover {
+	background-color: black;
+	cursor: pointer;
+}
+</style>
+</style>
+</head>
+<body>
+
+<div class="main-content" id="main-content"></div>
+
+<div class="modal fade" id="add-appointment">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">
+					<span class="fa fa-plus"></span> Add Appointment
+				</h4>
+				
+				<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+			</div>
+			
+			<div class="modal-body">
+				<b>1. Pick a Clinic</b>
+				<input type="text" class="form-control" id="add-appointment-search-clinic" placeholder="Search clinic" />
+				<input type="hidden" id="add-appointment-clinic-id" />
+				
+				<div class="add-appointment-search-box"></div>
+				
+				<br />
+				
+				<b>2. Pick a Date</b>
+				<input type="date" class="form-control" id="add-appointment-date" value="" /><br />
+				
+				<b>3. Pick a Time</b>
+				<input type="time" class="form-control" id="add-appointment-time" value="12:00" /><br />
+				
+				<b>4. Describe your appointment</b>
+				<textarea class="form-control" id="add-appointment-description" placeholder="Fever, Check Up etc."></textarea><br />
+				
+				<button class="btn btn-success navigate" id="add-appointment-submit" data-path="customer_appointments.html">
+					<span class="fa fa-paper-plane"></span> Submit Appointment
+				</button>
+			</div>
+			
+			<div class="modal-footer">
+				<button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+					<span class="fa fa-close"></span> Close
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<script>
+var today = new Date();
+var yyyy = today.getFullYear();
+let mm = (today.getMonth() + 1)  + "";
+let dd = today.getDate();
+
+if(mm.length < 2){
+	mm = "0" + mm;
+}
+
+$("#add-appointment-date").val(yyyy + "-" + mm + "-" + dd);
+
+$.ajax({
+	method: "GET",
+	url: "customer_navbar.html",
+	dataType: "text"
+}).done(function(res){
+	$("body").prepend(res);
+});
+
+$.ajax({
+	method: "GET",
+	url: "customer_bottomnav.html",
+	dataType: "text"
+}).done(function(res){
+	$("body").prepend(res);
+});
+
+$(document).on("click", ".nav-button", function(){
+	$(".popup-menu").toggle();
+});
+
+$(document).on("click", ".navigate", function(){
+	var path = $(this).data("path");
+	navigate(path);
+	var ukey = $(this).data('ukey');
+	window.currentUkey = ukey; 
+});
+
+function navigate(path = ""){	
+	$(".navigate").removeClass("active");
+	
+	$("[data-path='" + path + "']").addClass("active");
+	
+	$("#main-content").html("");
+	
+	$.ajax({
+		url: path,
+		method: "GET",
+		dataType: "text"
+	}).done(function(res){
+		$("#main-content").html(res);
+	}).fail(function(){
+		$("#main-content").html("<div class='text-center'>" + path + " not found.</div>");
+	});
+	
+	$(".popup-menu").hide();
+}
+
+navigate("customer_dashboard.html");
+
+
+$("#main-content").on("click", function(){
+	$(".popup-menu").hide();
+});
+
+$("#add-appointment-search-clinic").on("keyup", function() {
+    var ukey = localStorage.getItem('u_ukey');
+    var url = 'https://localhost/booking-app/Booking-app/www/api.php?key=asdljnalsdasd&action=getCustomerClinic&userkey=' + ukey;
+
+    $.ajax({
+        url: url,
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+
+			$(".add-appointment-search-box").show();
+            $('.add-appointment-search-box').html('');
+
+            response.forEach(function(clinic) {
+                var add_appoinment_search = `
+                    <div class="add-appointment-search-item" data-id="${clinic.c_id}" data-name="${clinic.c_name}">
+                        <strong>${clinic.c_name}</strong><br />
+                        ${clinic.c_address}
+                    </div>
+                `;
+                $('.add-appointment-search-box').append(add_appoinment_search);
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching clinics:', error);
+        }
+    });
+
+
+
+	// $(".add-appointment-search-box").show();
+	
+	// $(".add-appointment-search-box").html("");
+	
+	// //ajax get list of clinics
+	// $(".add-appointment-search-box").append('\
+	// 	<div class="add-appointment-search-item" data-id="a" data-name="Clinic A Ahmad Taman Universiti Skudai">\
+	// 		<strong>Clinic A Ahmad Taman Universiti Skudai</strong><br />\
+	// 		No 23a, Jalan Kebudayaan 16, Taman Universiti, 81300 Johor Bahru, Johor.\
+	// 	</div>\
+	// 	\
+	// 	<div class="add-appointment-search-item" data-id="b" data-name="Clinic B Baim TUTA">\
+	// 		<strong>Clinic B Baim TUTA</strong><br />\
+	// 		No 25, Jalan Kejayaan 9, Taman Ungku Tun Aminah, 81300 Johor Bahru, Johor.\
+	// 	</div>\
+	// 	\
+	// ');
+});
+
+$(document).on("click", ".add-appointment-search-item", function(){
+	var clinicName = $(this).data("name");
+    var clinicId = $(this).data("id");
+
+    $("#add-appointment-search-clinic").val(clinicName);
+    $("#add-appointment-clinic-id").val(clinicId);
+
+    $(".add-appointment-search-box").html("").hide();
+	
+});
+
+// $(document).ready(function() {
+//     var u_ukey = localStorage.getItem('u_ukey');
+//     console.log(u_ukey);
+// });
+</script>
+
+<script>
+	$("#add-appointment-submit").on("click", function() {
+		var clinicId = $("#add-appointment-clinic-id").val();
+		var date = $("#add-appointment-date").val();
+		var time = $("#add-appointment-time").val();
+		var description = $("#add-appointment-description").val();
+	
+		$.ajax({
+			url: 'http://localhost/booking-app/Booking-app/www/api.php?key=asdljnalsdasd&action=addCustomerAppointment&userkey=' + localStorage.getItem('u_ukey'),
+			type: 'POST',
+			dataType: 'json',
+			data: {
+				clinicId: clinicId,
+				date: date,
+				time: time,
+				description: description
+			},
+			success: function(response) {
+				if(response.status == "success"){
+					// alert("Appointment added successfully");
+					$('#add-appointment').modal('hide');
+
+				} else {
+					alert(response.message);
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				alert("Error: " + textStatus);
+			}
+		});
+	});
+</script>
+</body>
+</html> 

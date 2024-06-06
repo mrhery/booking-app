@@ -444,7 +444,159 @@ if(isset($_GET["key"]) && $_GET["key"] == "asdljnalsdasd"){
 				}
 				
 			break;
-			
+
+			//===========customers===========//
+
+			case "loginCustomer":
+				if(isset($_POST["username"], $_POST["password"])){
+					$salt = '5a7347f6fda4a346760af782d2ec126f7b9873ea9a*&(*9yad09707d0a7d0ad!@#!@#!#!#!$#!$!$!#$!$!$!$!$!%@$%#&&*^(7f2bb1fee9abdfd5f4dfc9';
+					$string = $_POST["password"];
+					 
+					$pass = hash("sha256", $string);
+					
+					$q = mysqli_query($conn, "SELECT * FROM customers 
+						WHERE c_email = '{$_POST["username"]}' AND 
+						c_password = '$string'
+					");
+					
+					$n = mysqli_num_rows($q);
+					
+					if($n > 0){
+						$row = mysqli_fetch_assoc($q);
+						die(json_encode([
+							"status"	=> "success",
+							"message"	=> "Login in success",
+							"c_ukey"    => $row['c_ukey']
+						]));
+					}else{
+						die(json_encode([
+							"status"	=> "error",
+							"message"	=> "Username or password is incorrect"
+						]));
+					}
+				}else{
+					die(json_encode([
+						"status"	=> "error",
+						"message"	=> "Insufficient request paramater"
+					]));
+				}
+			break;
+
+			case "getCustomerAppointments":
+				$userId = getCustomerID($conn, $_GET['userkey']);
+
+				$query = mysqli_query($conn, "SELECT a.*, clinics.c_name AS clinic_name FROM appointments AS a
+											   INNER JOIN clinics ON a.a_clinic = clinics.c_id
+											   WHERE a.a_customer = $userId
+											   ORDER BY a.a_time DESC");
+				$appointments = [];
+				while($row = mysqli_fetch_assoc($query)) {
+					$appointments[] = $row;
+				}
+
+				if($appointments){
+					foreach ($appointments as $key => $appointment) {
+						$appointments[$key]['a_time'] = date('d M Y h:i A', $appointment['a_time']);
+						if($appointment['a_status'] == 2){
+							$appointments[$key]['a_status'] = 'Rejected';
+						} elseif($appointment['a_status'] == 1) {
+							$appointments[$key]['a_status'] = 'Approved';
+						} else {
+							$appointments[$key]['a_status'] = 'Pending';
+						}
+					}
+				}
+
+				echo json_encode($appointments);
+
+			break;
+
+			case "getCustomerClinic":
+				$userId = getCustomerID($conn, $_GET['userkey']);
+
+				$query = mysqli_query($conn, "SELECT c.c_name, c.c_ukey, c.c_id, c.c_address FROM clinics as c JOIN clinic_customer as cc ON c.c_id = cc.cc_clinic WHERE cc.cc_customer = '$userId'");
+				$clinics = [];
+				while($row = mysqli_fetch_assoc($query)) {
+					$clinics[] = $row;
+				}
+				echo json_encode($clinics);
+				exit;
+
+			break;
+
+			case "addCustomerAppointment" :
+				$userId = getCustomerID($conn, $_GET['userkey']);
+
+				$clinicId = $_POST['clinicId'];
+				$date = $_POST['date'];
+				$time = strtotime($_POST['date'] . ' ' . $_POST['time']);
+				$reason = $_POST['description'];
+				$today = date('d-M-Y');
+
+				$ukey = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 20);
+				$query = "INSERT INTO appointments (a_ukey, a_customer, a_clinic, a_date, a_time, a_reason, a_status, a_createdDate) VALUES ('$ukey', $userId, $clinicId, '$date', '$time', '$reason', 0, '$today')";
+				$result = mysqli_query($conn, $query);
+
+				if($result){
+					echo json_encode([
+						"status" => "success",
+						"message" => "Profile updated.",
+					]);
+				} else {
+					echo json_encode([
+						"status" => "error",
+						"message" => "Failed to execute query."
+					]);
+				}
+				exit;
+
+			break;
+
+			case "customerProfile":
+				$userId = getCustomerID($conn, $_GET['userkey']);
+
+				$query = mysqli_query($conn, "SELECT c_name, c_email, c_phone, c_address, c_ic FROM customers WHERE c_id = $userId");
+				$data = mysqli_fetch_assoc($query);
+				echo json_encode($data);
+				exit;
+
+			break;
+
+			case "updateCustomerProfile":
+
+				if(isset($_POST["userkey"])){
+					$userId = getCustomerID($conn, $_POST['userkey']);
+					$name = $_POST['name'];
+					$email = $_POST['email'];
+					$phone = $_POST['phone'];
+					$address = $_POST['address'];
+					$ic = $_POST['ic'];
+
+					$query = "UPDATE customers SET c_name = '$name', c_email = '$email', c_phone = '$phone', c_address = '$address', c_ic = '$ic' WHERE c_id = $userId";
+					$result = mysqli_query($conn, $query);
+
+					if($result){
+						echo json_encode([
+							"status" => "success",
+							"message" => "Profile updated.",
+						]);
+					} else {
+						echo json_encode([
+							"status" => "error",
+							"message" => "Failed to execute query."
+						]);
+					}
+					exit;
+				}else{
+					echo json_encode([
+						"status" => "error",
+						"message" => "User key is required."
+					]);
+				}
+
+			break;
+
+
 		}
 	}else{
 		die(json_encode([
@@ -482,4 +634,10 @@ function getClinicID($conn, $c_ukey) {
 	$clinicQuery = mysqli_query($conn, "SELECT c_id FROM clinics WHERE c_ukey = '$c_ukey'");
 	$clinic = mysqli_fetch_assoc($clinicQuery);
 	return $clinic['c_id'];
+}
+
+function getCustomerID($conn, $ukey) {
+	$userQuery = mysqli_query($conn, "SELECT c_id FROM customers WHERE c_ukey = '$ukey'");
+	$user = mysqli_fetch_assoc($userQuery);
+	return $user['c_id'];
 }

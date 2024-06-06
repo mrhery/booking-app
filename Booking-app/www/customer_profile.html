@@ -1,0 +1,74 @@
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-12 mb-3 text-center">
+			<!-- <div class="img-profile m-auto mt-2 mb-4" style="background-image: url(./hery.png); background-size: cover; background-repeat: no-repeat; width: 180px; height: 180px; border-radius: 50%;"></div> -->
+			
+			
+			<h1 class="text-center mt-4" id="username">{{username}}</h1>
+		</div>
+	
+		<div class="col-12 mt-3">
+			Name:
+			<input type="text" class="form-control mb-2" id="profile-name" placeholder="Name" />
+			
+			Email:
+			<input type="text" class="form-control mb-2" id="profile-email" placeholder="Email" />
+			
+			Phone:
+			<input type="text" class="form-control mb-2" id="profile-phone" placeholder="Phone" />
+			
+			Address:
+			<input type="text" class="form-control mb-2" id="profile-address" placeholder="Address" />
+
+			<div class="d-flex justify-content-center mt-4">
+				<button id="save-button" class="btn btn-sm btn-success w-50 navigate" data-path="customer_profile.html">Save</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+$(document).ready(function() {
+	var ukey = localStorage.getItem('u_ukey');
+	var url = 'https://localhost/booking-app/Booking-app/www/api.php?key=asdljnalsdasd&action=customerProfile&userkey=' + ukey;
+	
+	$.ajax({
+		url: url,
+		type: 'GET',
+		dataType: 'json',
+		success: function(response) {
+			$('#username').text(response.c_name);
+			$('#profile-name').val(response.c_name);
+			$('#profile-email').val(response.c_email);
+			$('#profile-phone').val(response.c_phone);
+			$('#profile-address').val(response.c_address);
+		}
+	});
+
+	$('#save-button').click(function() {
+		var name = $('#profile-name').val();
+		var email = $('#profile-email').val();
+		var phone = $('#profile-phone').val();
+		var address = $('#profile-address').val();
+
+		$.ajax({
+			url: 'https://localhost/booking-app/Booking-app/www/api.php?key=asdljnalsdasd&action=updateCustomerProfile',
+			type: 'POST',
+			data: {
+				userkey: ukey,
+				name: name,
+				email: email,
+				phone: phone,
+				address: address
+			},
+			success: function(response) {
+				if(response.status === 'success') {
+					console.log('Profile updated successfully!');
+				} else {
+					console.error('Error updating profile:', response);
+				}
+			}
+		});
+	});
+});
+</script>
